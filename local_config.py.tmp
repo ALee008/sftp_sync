@@ -1,0 +1,20 @@
+login = {
+    'user': '',
+    'password': ''
+}
+
+server = {
+    'server': '',  # e.g. test.rebex.net
+    'port':   # e.g. 22
+}
+
+paths = {
+    'source': "",  e.g. ./pub/example/
+    'destination': "",  # e.g. ./data/
+    'logs': ""  # e.g. ./logs/sftp.log
+}
+
+files = (
+    '',
+    '',
+)
