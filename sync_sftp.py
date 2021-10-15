@@ -2,11 +2,11 @@ import os
 import logging
 import sys
 import time
-import datetime
 
 import tqdm
 import paramiko.util
 import socket
+import pandas as pd
 
 import local_settings as settings
 
@@ -16,16 +16,10 @@ logging.getLogger('paramiko')
 paramiko.util.log_to_file(settings.paths['logs'])
 
 
-def ceil_to_next_full_minutes(now: int, next_full_minutes: int) -> int:
-    for minute in range(0, next_full_minutes):
-        if (now + minute) % next_full_minutes == 0:
-            return minute * 60
-
-
-def get_user_friendly_timestamp(seconds: float):
-    dt = datetime.datetime.fromtimestamp(seconds)
-
-    return dt.strftime("%Y-%m-%d %H:%M:00")
+def ceil_to_next_full_minutes(now: pd.Timestamp, next_full_minutes: str) -> float:
+    next_run = now.ceil(next_full_minutes)
+    logging.info(f"Next run at approximately {next_run}")
+    return (next_run - now).total_seconds()
 
 
 def download_files():
@@ -49,6 +43,6 @@ if __name__ == '__main__':
 
     while True:
         download_files()
-        seconds_to_next_run = ceil_to_next_full_minutes(time.gmtime().tm_min, 5)
-        logging.info(f"Next run at approximately {get_user_friendly_timestamp(time.time() + seconds_to_next_run)}")
+        seconds_to_next_run = ceil_to_next_full_minutes(pd.Timestamp.now(), "5min")
+        logging.info(f"Seconds to next run: {seconds_to_next_run}")
         time.sleep(seconds_to_next_run)
