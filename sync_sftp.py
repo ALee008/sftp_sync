@@ -16,8 +16,9 @@ logging.getLogger('paramiko')
 paramiko.util.log_to_file(settings.paths['logs'])
 
 
-def ceil_to_next_full_minutes(now: pd.Timestamp, next_full_minutes: str) -> float:
-    next_run = now.ceil(next_full_minutes)
+def ceil_to_next_full_minutes(now: pd.Timestamp, next_full_minutes: int) -> float:
+    delta = pd.Timedelta(minutes=next_full_minutes)
+    next_run = now + delta
     logging.info(f"Next run at approximately {next_run}")
     return (next_run - now).total_seconds()
 
@@ -43,6 +44,6 @@ if __name__ == '__main__':
 
     while True:
         download_files()
-        seconds_to_next_run = ceil_to_next_full_minutes(pd.Timestamp.now(), "5min")
+        seconds_to_next_run = ceil_to_next_full_minutes(pd.Timestamp.now(), 5)
         logging.info(f"Seconds to next run: {seconds_to_next_run}")
         time.sleep(seconds_to_next_run)
