@@ -33,6 +33,7 @@ def upload_files():
                 logging.info(f"Upload {file_} -> {destination} [OK]")
                 # move files after upload
                 archive_files(file_)
+            delete_folder(settings.archives["upload_archive"])
     except socket.timeout as msg:
         logging.warning(f"A timeout was ignored: Actual exception message: {msg} [WARN]")
         pass
@@ -52,6 +53,17 @@ def archive_files(file_: pathlib.Path):
     logging.info(f"Moving file {file_} to {archived_path} [OK]")
 
     return None
+
+
+def delete_folder(path: pathlib.Path):
+    if path.is_dir():
+        shutil.rmtree(path, ignore_errors=True)
+        logging.info(f"Removing folder {path} [OK]")
+    else:
+        logging.info(f"{path} is not a directory.")
+
+    return None
+
 
 if __name__ == '__main__':
     upload_files()
