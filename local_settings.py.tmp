@@ -21,3 +21,7 @@ files = (
     '',
     '',
 )
+
+archives = {
+    'upload_archive': pathlib.Path(paths['upload_source']).joinpath('archive')
+}

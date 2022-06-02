@@ -1,5 +1,7 @@
+import os
 import pathlib
 import logging
+import shutil
 
 import paramiko.util
 import socket
@@ -23,16 +25,33 @@ def upload_files():
             transport.connect(username=settings.login['user'], password=settings.login['password'])
             sftp = paramiko.SFTPClient.from_transport(transport)
             for file_ in pathlib.Path(settings.paths['upload_source']).iterdir():
-                destination = pathlib.Path(settings.paths['upload_destination']).joinpath(file_.name)
-                print(file_, destination)
+                if file_.is_dir():
+                    continue
+                # use os.path instead of pathlib.Path because the latter removes preceding dot in path
+                destination = os.path.join(settings.paths['upload_destination'], file_.name)
                 sftp.put(str(file_), str(destination))
                 logging.info(f"Upload {file_} -> {destination} [OK]")
+                # move files after upload
+                archive_files(file_)
     except socket.timeout as msg:
         logging.warning(f"A timeout was ignored: Actual exception message: {msg} [WARN]")
         pass
 
     return None
 
+
+def archive_files(file_: pathlib.Path):
+    """Create archive folder if it does not exist and move uploaded file there.
+
+    :param file_: file to archive
+    :return: None
+    """
+    archived_path = pathlib.Path(settings.archives["upload_archive"]).joinpath(file_.name)
+    archived_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(file_, archived_path)
+    logging.info(f"Moving file {file_} to {archived_path} [OK]")
+
+    return None
 
 if __name__ == '__main__':
     upload_files()
