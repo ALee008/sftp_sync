@@ -13,15 +13,11 @@ paths = {
     'destination': "",  # e.g. ./data/
     'logs': "",  # e.g. ./logs/sftp.log
     'upload_source': r'',
-    'upload_destination': ''
+    'upload_destination': '',
+    'upload_logs': "./logs/sftp_upload.log",
 }
 
 files = (
-    '',
-    '',
-)
-
-upload_files = (
     '',
     '',
 )
