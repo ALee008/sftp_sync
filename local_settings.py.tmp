@@ -11,10 +11,17 @@ server = {
 paths = {
     'source': "",  e.g. ./pub/example/
     'destination': "",  # e.g. ./data/
-    'logs': ""  # e.g. ./logs/sftp.log
+    'logs': "",  # e.g. ./logs/sftp.log
+    'upload_source': r'',
+    'upload_destination': ''
 }
 
 files = (
+    '',
+    '',
+)
+
+upload_files = (
     '',
     '',
 )

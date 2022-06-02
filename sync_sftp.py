@@ -17,6 +17,9 @@ paramiko.util.log_to_file(settings.paths['logs'])
 
 
 def download_files():
+    """Download file based on configuration in local_settings.py
+    :return: None
+    """
     # create sftp object
     try:
         with paramiko.Transport((settings.server['server'], settings.server['port'])) as transport:
@@ -39,8 +42,28 @@ def download_files():
     return None
 
 
+def upload_files():
+    """Upload file based on configuration in local_settings.py
+    :return: None
+    """
+    # create sftp object
+    try:
+        with paramiko.Transport((settings.server['server'], settings.server['port'])) as transport:
+            transport.connect(username=settings.login['user'], password=settings.login['password'])
+            sftp = paramiko.SFTPClient.from_transport(transport)
+            for file_name in tqdm.tqdm(settings.upload_files, file=sys.stdout):
+                source = os.path.join(settings.paths['upload_source'], file_name)
+                destination = os.path.join(settings.paths['upload_destination'], file_name)
+                sftp.put(source, destination)
+    except socket.timeout as msg:
+        logging.warning(f"A timeout was ignored: Actual exception message: {msg}")
+        pass
+
+    return None
+
+
 def ts(timestamp: float) -> str:
-    """Return human readable time from `timestamp`.
+    """Return human-readable time from `timestamp`.
 
     :param timestamp: st_mtime from file.
     """
@@ -50,4 +73,5 @@ def ts(timestamp: float) -> str:
 
 
 if __name__ == '__main__':
-    download_files()
+    #download_files()
+    upload_files()
